@@ -1,0 +1,4 @@
+node_modules/
+panchayat.db
+.env
+*.log

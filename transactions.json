@@ -1,0 +1,26 @@
+[
+  {
+    "name": "Ravi",
+    "amount": "100",
+    "mode": "Cash",
+    "date": "2026-03-14"
+  },
+  {
+    "name": "QuickTest",
+    "amount": "222",
+    "mode": "Cash",
+    "date": "2026-03-14"
+  },
+  {
+    "name": "Vaibhav",
+    "amount": "123",
+    "mode": "Online",
+    "date": "2026-03-14"
+  },
+  {
+    "name": "hrlo",
+    "amount": "500",
+    "mode": "Cheque",
+    "date": "2026-10-12"
+  }
+]

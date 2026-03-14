@@ -1,0 +1,40 @@
+* { box-sizing: border-box; margin: 0; padding: 0; }
+:root { --bg: #f4f7ff; --card: #ffffff; --text: #1f2937; --muted: #6b7280; --primary: #0b5ed7; --primary-dark: #0a58ca; --success: #047857; --danger: #b91c1c; --border: #dbe2ee; }
+body { font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(180deg, #eef3ff 0%, #f8fbff 100%); color: var(--text); min-height: 100vh; }
+.app-shell { width: min(1100px, 95%); margin: 24px auto; }
+.card { background: var(--card); border-radius: 14px; border: 1px solid var(--border); box-shadow: 0 10px 25px rgba(15, 23, 42, 0.08); }
+.login-card { width: min(420px, 92%); margin: auto; padding: 28px; margin-top: 70px; border-radius: 16px; }
+.brand { font-size: 1rem; font-weight: 700; color: #0f172a; letter-spacing: 0.4px; }
+.section-title { font-size: 1.4rem; margin-bottom: 14px; color: #111827; }
+.field-group { margin-bottom: 12px; display: flex; flex-direction: column; gap: 6px; }
+.field-group label { font-weight: 600; color: #334155; font-size: 0.9rem; }
+.field-group input, .field-group select { padding: 11px 12px; border: 1px solid #cbd5e1; border-radius: 8px; background: #fff; font-size: 0.95rem; }
+.field-group input:focus, .field-group select:focus { border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37,99,235,0.15); outline: none; }
+.btn-primary, .btn-secondary { border: 0; border-radius: 8px; padding: 10px 16px; font-size: 0.95rem; font-weight: 600; cursor: pointer; }
+.btn-primary { background: var(--primary); color: #fff; box-shadow: 0 6px 15px rgba(11,94,215,0.3); }
+.btn-primary:hover { background: var(--primary-dark); }
+.btn-secondary { background: #e2e8f0; color: #1f2937; }
+.topbar { background: var(--card); border: 1px solid var(--border); border-radius: 14px; width: 100%; margin: 20px auto; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 10px 20px rgba(15,23,42,0.05); }
+.topbar-left { display: flex; flex-direction: column; gap: 4px; }
+.page-title { font-size: 1.35rem; font-weight: 700; color: #0f172a; }
+.sub-title { color: #475569; font-size: 0.93rem; }
+.main-grid { margin: 12px auto; width: 100%; display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 14px; }
+.module-card { border-radius: 12px; background: #fff; border: 1px solid #e2e8f0; min-height: 110px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 12px; color: #1e293b; font-weight: 600; box-shadow: 0 7px 18px rgba(15,23,42,0.06); }
+.module-card .status { margin-top: 6px; font-size: 0.8rem; color: #64748b; font-weight: 500; }
+.module-clickable { border-color: #0b5ed7; color: #0b5ed7; }
+.module-clickable:hover { background: #eef4ff; }
+.info-box { width: 100%; background: #eef2ff; border-left: 4px solid #2563eb; margin: 15px auto; padding: 12px 14px; border-radius: 8px; color: #1e293b; }
+.module-content { width: 100%; margin: 20px auto; padding: 18px; border-radius: 14px; border: 1px solid #e2e8f0; background: #fff; box-shadow: 0 10px 18px rgba(15,23,42,0.06); }
+.form-wrap { width: 100%; max-width: 620px; margin: 18px auto; }
+.button-row { display: flex; gap: 10px; margin-top: 14px; }
+.status { margin-top: 10px; font-weight: 600; font-size: 0.9rem; }
+.status-success { color: var(--success); }
+.status-error { color: var(--danger); }
+.assistant { position: fixed; right: 16px; bottom: 16px; width: 310px; border-radius: 12px; background: #fff; border: 1px solid #cbd5e1; box-shadow: 0 16px 36px rgba(15,23,42,0.2); }
+.assistant-header { background: #0b5ed7; color: #fff; padding: 10px; border-radius: 12px 12px 0 0; font-weight: 700; }
+.assistant-body { padding: 10px; min-height: 54px; color: #111827; font-size: 0.9rem; line-height: 1.35; }
+.assistant-controls { display: flex; border-top: 1px solid #e2e8f0; }
+.assistant-controls input { flex: 1; border: none; padding: 10px; border-right: 1px solid #e2e8f0; outline: none; font-size: 0.9rem; }
+.assistant-controls button { border: none; background: #0b5ed7; color: #fff; padding: 10px 12px; border-radius: 0 0 10px 0; cursor: pointer; }
+.small { color: #475569; font-size: 0.85rem; }
+@media (max-width: 900px) { .topbar { flex-wrap: wrap; } .assistant { width: calc(100vw - 28px); } }

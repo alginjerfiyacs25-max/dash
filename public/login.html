@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>e-Town Panchayat Login</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <div class="card login-card">
+      <div class="brand">e-Town Panchayat Financial Transaction Management</div>
+      <div class="section-title">Officer Sign In</div>
+      <p style="color:#475569; margin-bottom:14px; font-size:0.94rem;">Secure local environment login. All financial records remain on this system.</p>
+      <div id="loginError" class="status status-error" style="display:none; margin-bottom:10px;"></div>
+      <div class="field-group">
+        <label for="userId">User ID</label>
+        <input id="userId" type="text" placeholder="Enter User ID" required>
+      </div>
+      <div class="field-group">
+        <label for="password">Password</label>
+        <input id="password" type="password" placeholder="Enter Password" required>
+      </div>
+      <button id="loginBtn" class="btn-primary">Login</button>
+      <p class="small" style="margin-top:12px;">Default: admin / admin123 (change after first login if needed)</p>
+    </div>
+  </div>
+
+  <div id="assistant" class="assistant">
+    <div class="assistant-header">Panchayat Assistant</div>
+    <div id="assistantBody" class="assistant-body">Ask me about login, accounts, or transactions.</div>
+    <div class="assistant-controls">
+      <input id="assistantInput" type="text" placeholder="Ask your question...">
+      <button id="assistantSend">Send</button>
+    </div>
+  </div>
+
+  <script src="chatbot.js"></script>
+  <script>
+    function api(path, options = {}) {
+      const base = window.location.origin;
+      return fetch(base + path, { ...options, headers: { 'Content-Type': 'application/json', ...options.headers } });
+    }
+
+    document.getElementById('loginBtn').addEventListener('click', async () => {
+      const userId = document.getElementById('userId').value.trim();
+      const password = document.getElementById('password').value.trim();
+      const errEl = document.getElementById('loginError');
+      errEl.style.display = 'none';
+      if (!userId || !password) {
+        errEl.textContent = 'Please enter User ID and Password.';
+        errEl.style.display = 'block';
+        return;
+      }
+      try {
+        const resp = await api('/api/auth/login', { method: 'POST', body: JSON.stringify({ userId, password }) });
+        const data = await resp.json().catch(() => ({}));
+        if (!resp.ok) {
+          errEl.textContent = data.message || 'Login failed.';
+          errEl.style.display = 'block';
+          return;
+        }
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('username', data.username);
+        window.location.href = 'dashboard.html';
+      } catch (e) {
+        errEl.textContent = 'Cannot reach server. Start the backend: npm start';
+        errEl.style.display = 'block';
+      }
+    });
+  </script>
+</body>
+</html>

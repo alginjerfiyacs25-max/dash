@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Accounts & Financial Management</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="topbar-left">
+        <div class="page-title">Accounts & Financial Management</div>
+        <div class="sub-title">Local financial ledger and transaction control</div>
+      </div>
+      <button class="btn-secondary" id="backBtn">Back</button>
+    </header>
+
+    <div class="module-content">
+      <div class="section-title">Accounts Dashboard</div>
+      <p style="margin-bottom:10px; color:#334155;">This module manages local financial transaction entries and stores them in the local SQLite database (panchayat.db). Data persists across restarts and page refreshes.</p>
+      <button class="btn-primary" id="transactionsBtn">Open Transactions</button>
+      <p class="small" style="margin-top:10px;">Database: <code>panchayat.db</code></p>
+    </div>
+  </div>
+
+  <div id="assistant" class="assistant">
+    <div class="assistant-header">Panchayat Assistant</div>
+    <div id="assistantBody" class="assistant-body">Ask me about login, accounts, or transactions.</div>
+    <div class="assistant-controls">
+      <input id="assistantInput" type="text" placeholder="Ask your question...">
+      <button id="assistantSend">Send</button>
+    </div>
+  </div>
+
+  <script src="chatbot.js"></script>
+  <script>
+    const token = localStorage.getItem('token');
+    const username = localStorage.getItem('username');
+    if (!token || !username) { window.location.href = 'login.html'; }
+
+    document.getElementById('transactionsBtn').addEventListener('click', () => { window.location.href = 'transactions.html'; });
+    document.getElementById('backBtn').addEventListener('click', () => { window.location.href = 'dashboard.html'; });
+  </script>
+</body>
+</html>

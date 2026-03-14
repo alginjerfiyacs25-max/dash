@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Triplicate Challan Entry</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="topbar-left">
+        <div class="page-title">Triplicate Challan Entry</div>
+        <div class="sub-title">Local transaction entry and auditing registry</div>
+      </div>
+      <button class="btn-secondary" id="backBtn">Back</button>
+    </header>
+
+    <main class="form-wrap">
+      <div class="card" style="padding: 20px;">
+        <div class="section-title">Triplicate Challan Entry</div>
+        <p style="color:#475569; margin-bottom:12px;">Record payment details and save to the local SQLite database. Data is secure and persists after refresh.</p>
+        <div class="field-group">
+          <label for="remitterName">Remitter Name</label>
+          <input id="remitterName" type="text" placeholder="Enter remitter name" />
+        </div>
+        <div class="field-group">
+          <label for="amount">Amount</label>
+          <input id="amount" type="number" placeholder="Enter amount" />
+        </div>
+        <div class="field-group">
+          <label for="mode">Payment Mode</label>
+          <select id="mode">
+            <option value="">Select Payment Mode</option>
+            <option value="Cash">Cash</option>
+            <option value="Online">Online</option>
+            <option value="Cheque">Cheque</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label for="date">Date</label>
+          <input id="date" type="date" />
+        </div>
+        <div class="button-row">
+          <button id="saveBtn" class="btn-primary">Save</button>
+          <button id="clearBtn" class="btn-secondary">Clear form</button>
+          <button id="loadHistoryBtn" class="btn-secondary" style="background:#e9f5ff;">Refresh History</button>
+        </div>
+        <div id="status" class="status"></div>
+      </div>
+    </main>
+
+    <section class="module-content" style="margin-top:10px;">
+      <h3 style="margin-bottom:8px; font-size:1.05rem;">Transaction History (SQLite)</h3>
+      <div style="overflow-x:auto;">
+        <table id="historyTable" style="width:100%; border-collapse:collapse;">
+          <thead>
+            <tr>
+              <th style="border-bottom:1px solid #cbd5e1; padding:8px; text-align:left;">Remitter Name</th>
+              <th style="border-bottom:1px solid #cbd5e1; padding:8px; text-align:left;">Amount</th>
+              <th style="border-bottom:1px solid #cbd5e1; padding:8px; text-align:left;">Mode</th>
+              <th style="border-bottom:1px solid #cbd5e1; padding:8px; text-align:left;">Date</th>
+              <th style="border-bottom:1px solid #cbd5e1; padding:8px; text-align:left;">Recorded by</th>
+            </tr>
+          </thead>
+          <tbody id="historyBody"></tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <div id="assistant" class="assistant">
+    <div class="assistant-header">Panchayat Assistant</div>
+    <div id="assistantBody" class="assistant-body">Ask me about login, accounts, or transactions.</div>
+    <div class="assistant-controls">
+      <input id="assistantInput" type="text" placeholder="Ask your question...">
+      <button id="assistantSend">Send</button>
+    </div>
+  </div>
+
+  <script src="chatbot.js"></script>
+  <script>
+    const token = localStorage.getItem('token');
+    const username = localStorage.getItem('username');
+    if (!token || !username) { window.location.href = 'login.html'; }
+
+    function authHeaders() {
+      return { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token };
+    }
+
+    function api(path, options = {}) {
+      return fetch(window.location.origin + path, { ...options, headers: authHeaders() });
+    }
+
+    document.getElementById('backBtn').addEventListener('click', () => { window.location.href = 'accounts.html'; });
+
+    document.getElementById('clearBtn').addEventListener('click', () => {
+      document.getElementById('remitterName').value = '';
+      document.getElementById('amount').value = '';
+      document.getElementById('mode').value = '';
+      document.getElementById('date').value = '';
+      document.getElementById('status').textContent = '';
+      document.getElementById('status').classList.remove('status-success', 'status-error');
+    });
+
+    document.getElementById('saveBtn').addEventListener('click', async () => {
+      const name = document.getElementById('remitterName').value.trim();
+      const amount = document.getElementById('amount').value.trim();
+      const mode = document.getElementById('mode').value;
+      const date = document.getElementById('date').value;
+      if (!name || !amount || !mode || !date) {
+        alert('Please fill all fields.');
+        return;
+      }
+
+      const statusEl = document.getElementById('status');
+      try {
+        const resp = await api('/api/transactions', {
+          method: 'POST',
+          body: JSON.stringify({ name, amount, mode, date })
+        });
+        const data = await resp.json().catch(() => ({}));
+        if (resp.ok) {
+          statusEl.textContent = data.message || 'Transaction saved.';
+          statusEl.className = 'status status-success';
+          document.getElementById('remitterName').value = '';
+          document.getElementById('amount').value = '';
+          document.getElementById('mode').value = '';
+          document.getElementById('date').value = '';
+          loadHistory();
+        } else {
+          statusEl.textContent = data.message || 'Failed to save.';
+          statusEl.className = 'status status-error';
+        }
+      } catch (err) {
+        statusEl.textContent = 'Network error. Is the server running? (npm start)';
+        statusEl.className = 'status status-error';
+      }
+    });
+
+    document.getElementById('loadHistoryBtn').addEventListener('click', loadHistory);
+
+    async function loadHistory() {
+      const body = document.getElementById('historyBody');
+      try {
+        const resp = await api('/api/transactions');
+        if (resp.status === 401) {
+          localStorage.removeItem('token');
+          localStorage.removeItem('username');
+          window.location.href = 'login.html';
+          return;
+        }
+        if (!resp.ok) throw new Error('Failed to load history');
+        const history = await resp.json();
+        body.innerHTML = '';
+        if (!Array.isArray(history) || history.length === 0) {
+          body.innerHTML = '<tr><td colspan="5" style="padding:8px;color:#64748b;">No transactions yet.</td></tr>';
+          return;
+        }
+        history.forEach(tx => {
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td style="padding:8px;border-bottom:1px solid #e2e8f0;">${escapeHtml(tx.name || '')}</td>
+            <td style="padding:8px;border-bottom:1px solid #e2e8f0;">${escapeHtml(tx.amount || '')}</td>
+            <td style="padding:8px;border-bottom:1px solid #e2e8f0;">${escapeHtml(tx.mode || '')}</td>
+            <td style="padding:8px;border-bottom:1px solid #e2e8f0;">${escapeHtml(tx.date || '')}</td>
+            <td style="padding:8px;border-bottom:1px solid #e2e8f0;">${escapeHtml(tx.created_by || '')}</td>
+          `;
+          body.appendChild(row);
+        });
+      } catch (err) {
+        console.error('History load error:', err);
+        body.innerHTML = '<tr><td colspan="5" style="padding:8px;color:#b91c1c;">Failed to load. Open via http://localhost:3000 and ensure server is running.</td></tr>';
+      }
+    }
+
+    function escapeHtml(s) {
+      const div = document.createElement('div');
+      div.textContent = s;
+      return div.innerHTML;
+    }
+
+    loadHistory();
+  </script>
+</body>
+</html>
